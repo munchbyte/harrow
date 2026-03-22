@@ -43,7 +43,7 @@ _DESTRUCTIVE_TRIGGERS = [
 ]
 
 # Base URL for approve links
-_BASE_URL = os.environ.get("HARROW_BASE_URL", "https://harrow.attic-tech.co.uk")
+_BASE_URL = os.environ.get("HARROW_BASE_URL", "https://harrow.goblinmedia.net")
 
 
 def _get_ntfy_config() -> Tuple[str, str]:

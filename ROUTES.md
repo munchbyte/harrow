@@ -1,6 +1,6 @@
 # HARROW — API Routes Reference
 
-Base URL: `https://harrow.attic-tech.co.uk`
+Base URL: `https://harrow.goblinmedia.net`
 Auth: `X-API-Key` header or `harrow_token` session cookie on all endpoints except `/health` and `/auth`.
 
 All responses follow the ASP-002 standard envelope:
@@ -20,14 +20,14 @@ All responses follow the ASP-002 standard envelope:
 ### GET /health
 Agent alive check. No auth required.
 ```bash
-curl https://harrow.attic-tech.co.uk/health
+curl https://harrow.goblinmedia.net/health
 ```
 Response: `{ status, agent_id, timestamp, data: { version, uptime_seconds } }`
 
 ### GET /info
 Full agent description.
 ```bash
-curl -H "X-API-Key: $KEY" https://harrow.attic-tech.co.uk/info
+curl -H "X-API-Key: $KEY" https://harrow.goblinmedia.net/info
 ```
 Response: `{ data: { agent_id, name, description, version, capabilities, tasks } }`
 
@@ -36,7 +36,7 @@ Execute a task. Creates a job. Returns immediately with job_id.
 ```bash
 curl -X POST -H "X-API-Key: $KEY" -H "Content-Type: application/json" \
   -d '{"task": "run_lead_harvest", "params": {"query": "restaurants in Llanelli", "limit": 20, "dry_run": true}, "caller": "adrian"}' \
-  https://harrow.attic-tech.co.uk/run
+  https://harrow.goblinmedia.net/run
 ```
 Response: `{ data: { job_id, task, status: "running" } }`
 
@@ -55,21 +55,21 @@ Response: `{ data: { job_id, task, status: "running" } }`
 ### GET /status/{job_id}
 Check a running or completed job.
 ```bash
-curl -H "X-API-Key: $KEY" https://harrow.attic-tech.co.uk/status/{job_id}
+curl -H "X-API-Key: $KEY" https://harrow.goblinmedia.net/status/{job_id}
 ```
 Response: `{ data: { job_id, task, status, progress, result, channel } }`
 
 ### GET /logs
 Activity log with filters.
 ```bash
-curl -H "X-API-Key: $KEY" "https://harrow.attic-tech.co.uk/logs?channel=email&level=ERROR&limit=50"
+curl -H "X-API-Key: $KEY" "https://harrow.goblinmedia.net/logs?channel=email&level=ERROR&limit=50"
 ```
 Response: `{ data: { entries: [...] } }`
 
 ### POST /stop/{job_id}
 Gracefully stop a running job.
 ```bash
-curl -X POST -H "X-API-Key: $KEY" https://harrow.attic-tech.co.uk/stop/{job_id}
+curl -X POST -H "X-API-Key: $KEY" https://harrow.goblinmedia.net/stop/{job_id}
 ```
 Response: `{ data: { job_id, status: "failed", message: "Stopped by user" } }`
 
@@ -80,21 +80,21 @@ Response: `{ data: { job_id, status: "failed", message: "Stopped by user" } }`
 ### POST /go/{channel}
 Arm a channel. Channels: email, voice, social, ads.
 ```bash
-curl -X POST -H "X-API-Key: $KEY" https://harrow.attic-tech.co.uk/go/email
+curl -X POST -H "X-API-Key: $KEY" https://harrow.goblinmedia.net/go/email
 ```
 Response: `{ data: { channel: "email", armed: true, armed_at: "..." } }`
 
 ### POST /revoke/{channel}
 Disarm a channel immediately.
 ```bash
-curl -X POST -H "X-API-Key: $KEY" https://harrow.attic-tech.co.uk/revoke/email
+curl -X POST -H "X-API-Key: $KEY" https://harrow.goblinmedia.net/revoke/email
 ```
 Response: `{ data: { channel: "email", armed: false } }`
 
 ### GET /go-status
 Return all four channel GO states.
 ```bash
-curl -H "X-API-Key: $KEY" https://harrow.attic-tech.co.uk/go-status
+curl -H "X-API-Key: $KEY" https://harrow.goblinmedia.net/go-status
 ```
 Response: `{ data: { email: { armed: true, armed_at: "..." }, voice: {...}, social: {...}, ads: {...} } }`
 
@@ -105,21 +105,21 @@ Response: `{ data: { email: { armed: true, armed_at: "..." }, voice: {...}, soci
 ### GET /gates
 List HITL gates. Default: pending only.
 ```bash
-curl -H "X-API-Key: $KEY" "https://harrow.attic-tech.co.uk/gates?status=pending"
+curl -H "X-API-Key: $KEY" "https://harrow.goblinmedia.net/gates?status=pending"
 ```
 Response: `{ data: { gates: [...] } }`
 
 ### POST /gates/{id}/resolve
 Approve a HITL gate. Job resumes.
 ```bash
-curl -X POST -H "X-API-Key: $KEY" https://harrow.attic-tech.co.uk/gates/1/resolve
+curl -X POST -H "X-API-Key: $KEY" https://harrow.goblinmedia.net/gates/1/resolve
 ```
 Response: `{ data: { id: 1, status: "resolved", resolved_by: "adrian" } }`
 
 ### GET /approve/{token}
 One-Touch Receipt signed URL approval. No auth header required (HMAC in token).
 ```bash
-curl https://harrow.attic-tech.co.uk/approve/{signed_token}
+curl https://harrow.goblinmedia.net/approve/{signed_token}
 ```
 Redirects to dashboard on success. Returns 403 if token expired or invalid.
 
@@ -132,7 +132,7 @@ Validate API key. Set session cookie.
 ```bash
 curl -X POST -H "Content-Type: application/json" \
   -d '{"token": "your-api-key"}' \
-  https://harrow.attic-tech.co.uk/auth
+  https://harrow.goblinmedia.net/auth
 ```
 Response: `{ data: { authenticated: true } }` + `Set-Cookie: harrow_token=...`
 
@@ -152,7 +152,7 @@ Test an API key against its target service.
 ```bash
 curl -X POST -H "X-API-Key: $KEY" -H "Content-Type: application/json" \
   -d '{"key_name": "OUTSCRAPER_API_KEY"}' \
-  https://harrow.attic-tech.co.uk/settings/key/test
+  https://harrow.goblinmedia.net/settings/key/test
 ```
 Response: `{ data: { key_name: "OUTSCRAPER_API_KEY", result: "PASS|FAIL", detail: "..." } }`
 
@@ -161,14 +161,14 @@ Update an API key in .env. Triggers graceful restart.
 ```bash
 curl -X POST -H "X-API-Key: $KEY" -H "Content-Type: application/json" \
   -d '{"key_name": "OUTSCRAPER_API_KEY", "value": "new-key-value"}' \
-  https://harrow.attic-tech.co.uk/settings/key/update
+  https://harrow.goblinmedia.net/settings/key/update
 ```
 Response: `{ data: { key_name: "OUTSCRAPER_API_KEY", updated: true } }`
 
 ### GET /settings/channel/{channel}
 Return current config for a channel.
 ```bash
-curl -H "X-API-Key: $KEY" https://harrow.attic-tech.co.uk/settings/channel/email
+curl -H "X-API-Key: $KEY" https://harrow.goblinmedia.net/settings/channel/email
 ```
 Response: `{ data: { send_window_start: "08:00", send_window_end: "17:00", m2_delay_days: 5, ... } }`
 
@@ -177,14 +177,14 @@ Update channel config.
 ```bash
 curl -X POST -H "X-API-Key: $KEY" -H "Content-Type: application/json" \
   -d '{"m2_delay_days": 7}' \
-  https://harrow.attic-tech.co.uk/settings/channel/email
+  https://harrow.goblinmedia.net/settings/channel/email
 ```
 Response: `{ data: { channel: "email", updated_keys: ["m2_delay_days"] } }`
 
 ### GET /settings/agent-info
 Return version, uptime, capabilities, registry SQL.
 ```bash
-curl -H "X-API-Key: $KEY" https://harrow.attic-tech.co.uk/settings/agent-info
+curl -H "X-API-Key: $KEY" https://harrow.goblinmedia.net/settings/agent-info
 ```
 Response: `{ data: { version, uptime, port, capabilities, registry_sql } }`
 
@@ -195,6 +195,6 @@ Response: `{ data: { version, uptime, port, capabilities, registry_sql } }`
 ### GET /stream/{job_id}
 Server-Sent Events stream for live terminal output during long-running tasks.
 ```bash
-curl -H "X-API-Key: $KEY" -N https://harrow.attic-tech.co.uk/stream/{job_id}
+curl -H "X-API-Key: $KEY" -N https://harrow.goblinmedia.net/stream/{job_id}
 ```
 Returns `text/event-stream` with `data: { line, timestamp }` events.

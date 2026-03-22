@@ -1,6 +1,6 @@
 # HARROW — VPS Deployment Guide
 
-Target: Hostinger VPS at harrow.attic-tech.co.uk
+Target: Hostinger VPS at harrow.goblinmedia.net
 Port: 8001 (internal), 443 (external via Nginx)
 
 ---
@@ -60,12 +60,12 @@ systemctl reload nginx
 
 ## Step 7: SSL Certificate
 ```bash
-certbot --nginx -d harrow.attic-tech.co.uk
+certbot --nginx -d harrow.goblinmedia.net
 ```
 
 ## Step 8: Verify
 ```bash
-curl https://harrow.attic-tech.co.uk/health
+curl https://harrow.goblinmedia.net/health
 # Expected: {"status":"ok","agent_id":"harrow","timestamp":"...","data":{"version":"1.0.0","uptime_seconds":...}}
 ```
 

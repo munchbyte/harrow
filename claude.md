@@ -3,7 +3,7 @@
 ## What This App Does
 HARROW is the CMO agent for Goblin Media Network / Attic Tech Solutions.
 Sovereign FastAPI service, port 8001. Five channels: lead gen, email, voice, social, ads.
-Control Centre at harrow.attic-tech.co.uk. 7-stage Campaign Builder.
+Control Centre at harrow.goblinmedia.net. 7-stage Campaign Builder.
 Voss copy techniques. v3.4 enhancements: Liability Predictor, 3-Failure Gate,
 Log-Sync Auto, One-Touch Receipt.
 GMN Marketing Rules Charter v2.0. ASP-001/002/003 compliant.
@@ -41,7 +41,7 @@ Only /health and /auth are unauthenticated. Single user (Adrian).
 ## Deployment
 Hostinger VPS, /var/www/harrow/, port 8001.
 systemd harrow-agent, Nginx proxy, Certbot SSL.
-harrow.attic-tech.co.uk. Tailscale restricted.
+harrow.goblinmedia.net. Tailscale restricted.
 main=production, dev=staging. Never deploy from dev without GO.
 
 ## Coding Conventions

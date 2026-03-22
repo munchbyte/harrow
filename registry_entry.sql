@@ -20,7 +20,7 @@ INSERT INTO agent_registry (
     '7-stage Campaign Builder. Voss copy techniques. '
     'ASP-001/002/003 compliant. GMN Marketing Rules Charter v2.0.',
     '1.0.0',
-    'harrow.attic-tech.co.uk',
+    'harrow.goblinmedia.net',
     8001,
     '/health',
     'active',
