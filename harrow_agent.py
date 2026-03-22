@@ -28,6 +28,11 @@ from campaign.scheduler import start_scheduler, stop_scheduler
 from channels.voice import task_voice_brief
 from channels.social import task_social_brief
 from channels.ads import task_ads_brief
+from channels.report import task_channel_report
+
+# Dashboard + Settings (Phase 5)
+from routes.dashboard import router as dashboard_router
+from routes.settings import router as settings_router
 
 # Agent metadata
 AGENT_ID = "harrow"
@@ -51,11 +56,12 @@ async def lifespan(application: FastAPI):
     register_task("run_voice_brief", task_voice_brief, "voice")
     register_task("run_social_brief", task_social_brief, "social")
     register_task("run_ads_brief", task_ads_brief, "ads")
+    register_task("run_channel_report", task_channel_report, None)
 
     # Start autonomous follow-up scheduler
     start_scheduler()
 
-    alog("INFO", f"HARROW {AGENT_VERSION} started on port {AGENT_PORT} — 7 tasks registered, scheduler active", step="startup")
+    alog("INFO", f"HARROW {AGENT_VERSION} started on port {AGENT_PORT} — 8 tasks registered, scheduler active", step="startup")
     yield
     # Shutdown
     stop_scheduler()
@@ -75,11 +81,9 @@ app.include_router(asp002_router)
 app.include_router(go_gates_router)
 app.include_router(hitl_router)
 
-# Phase 5: dashboard and settings routes
-# from routes.dashboard import router as dashboard_router
-# from routes.settings import router as settings_router
-# app.include_router(dashboard_router)
-# app.include_router(settings_router)
+# Dashboard and settings routes (Phase 5)
+app.include_router(dashboard_router)
+app.include_router(settings_router)
 
 
 @app.get("/health")

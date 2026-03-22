@@ -5,29 +5,322 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HARROW — Control Centre</title>
     <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-dim: #8b949e;
+            --accent: #2D6A4F;
+            --accent-light: #40916C;
+            --red: #f85149;
+            --yellow: #d29922;
+            --green: #3fb950;
+            --blue: #58a6ff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0d1117;
-            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            justify-content: space-between;
         }
-        .scaffold {
-            text-align: center;
-            padding: 2rem;
+        .header h1 { color: var(--accent-light); font-size: 1.4rem; font-weight: 600; }
+        .header .subtitle { color: var(--text-dim); font-size: 0.85rem; }
+        .header .status-badge {
+            background: var(--green);
+            color: #000;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
-        h1 { color: #2D6A4F; font-size: 2rem; }
-        p { color: #8b949e; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.2rem;
+        }
+        .card h3 { color: var(--text); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .go-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+        .go-item {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg); padding: 0.5rem 0.8rem; border-radius: 6px;
+        }
+        .go-label { font-size: 0.85rem; text-transform: capitalize; }
+        .go-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .go-dot.armed { background: var(--green); box-shadow: 0 0 6px var(--green); }
+        .go-dot.revoked { background: var(--red); }
+        .stat { text-align: center; padding: 0.5rem; }
+        .stat .num { font-size: 2rem; font-weight: 700; color: var(--accent-light); }
+        .stat .label { font-size: 0.75rem; color: var(--text-dim); }
+        .gate-list { list-style: none; }
+        .gate-item {
+            background: var(--bg); padding: 0.6rem 0.8rem; border-radius: 6px;
+            margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: space-between;
+            font-size: 0.85rem;
+        }
+        .gate-trigger { flex: 1; }
+        .gate-channel { color: var(--blue); font-size: 0.75rem; margin-right: 0.5rem; }
+        .btn {
+            background: var(--accent); color: #fff; border: none;
+            padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
+            font-size: 0.8rem; font-weight: 500;
+        }
+        .btn:hover { background: var(--accent-light); }
+        .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.75rem; }
+        .log-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .log-table th { text-align: left; color: var(--text-dim); font-weight: 500; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); }
+        .log-table td { padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); }
+        .log-level { font-weight: 600; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 3px; }
+        .log-level.INFO { color: var(--blue); }
+        .log-level.WARN { color: var(--yellow); }
+        .log-level.ERROR { color: var(--red); }
+        .log-level.GATE { color: var(--accent-light); }
+        .terminal {
+            background: #000; color: #0f0; font-family: 'Courier New', monospace;
+            padding: 1rem; border-radius: 6px; font-size: 0.8rem;
+            max-height: 300px; overflow-y: auto; white-space: pre-wrap;
+        }
+        .run-form { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .run-form select, .run-form input {
+            background: var(--bg); color: var(--text); border: 1px solid var(--border);
+            padding: 0.4rem 0.6rem; border-radius: 4px; font-size: 0.85rem;
+        }
+        .run-form select { min-width: 180px; }
+        .run-form input { flex: 1; min-width: 200px; }
+        .login-box { max-width: 360px; margin: 4rem auto; text-align: center; }
+        .login-box input {
+            width: 100%; background: var(--bg); color: var(--text);
+            border: 1px solid var(--border); padding: 0.6rem; border-radius: 4px;
+            margin: 0.5rem 0; font-size: 0.9rem;
+        }
+        .footer { text-align: center; color: var(--text-dim); font-size: 0.75rem; padding: 2rem; }
     </style>
 </head>
 <body>
-    <div class="scaffold">
-        <h1>HARROW</h1>
-        <p>The Resonant CMO — Control Centre</p>
-        <p>Scaffold only. Dashboard built in Phase 5.</p>
+    <div class="header">
+        <div>
+            <h1>HARROW</h1>
+            <span class="subtitle">The Resonant CMO — Control Centre</span>
+        </div>
+        <span class="status-badge">ONLINE</span>
     </div>
+
+    {% if not authenticated %}
+    <div class="container">
+        <div class="login-box card">
+            <h3>Authenticate</h3>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem;">Enter your API key to access the Control Centre.</p>
+            <input type="password" id="auth-key" placeholder="API Key">
+            <button class="btn" onclick="doAuth()" style="width: 100%; margin-top: 0.5rem; padding: 0.5rem;">Authenticate</button>
+            <p id="auth-error" style="color: var(--red); font-size: 0.8rem; margin-top: 0.5rem;"></p>
+        </div>
+    </div>
+    {% else %}
+    <div class="container">
+        <!-- GO States + Gate Count -->
+        <div class="grid">
+            <div class="card">
+                <h3>GO States</h3>
+                <div class="go-grid">
+                    {% for channel, state in go_states.items() %}
+                    <div class="go-item">
+                        <span class="go-label">{{ channel }}</span>
+                        <div style="display:flex;align-items:center;gap:0.4rem;">
+                            <span class="go-dot {{ 'armed' if state.armed else 'revoked' }}"></span>
+                            <button class="btn btn-sm" onclick="toggleGo('{{ channel }}', {{ 'false' if state.armed else 'true' }})">
+                                {{ 'Revoke' if state.armed else 'Arm' }}
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card">
+                <div class="stat">
+                    <div class="num" style="color: {{ 'var(--yellow)' if gate_count > 0 else 'var(--green)' }}">{{ gate_count }}</div>
+                    <div class="label">Pending HITL Gates</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HITL Gates -->
+        {% if pending_gates %}
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h3>Pending Gates</h3>
+            <ul class="gate-list">
+                {% for gate in pending_gates %}
+                <li class="gate-item">
+                    <span class="gate-channel">[{{ gate.channel or '—' }}]</span>
+                    <span class="gate-trigger">{{ gate.trigger }}</span>
+                    <button class="btn btn-sm" onclick="resolveGate({{ gate.id }})">Approve</button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Run Task -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h3>Run Task</h3>
+            <div class="run-form">
+                <select id="task-select">
+                    <option value="run_lead_harvest">Lead Harvest</option>
+                    <option value="run_ghost_audit">Ghost Audit</option>
+                    <option value="run_copy_review">Copy Review</option>
+                    <option value="run_campaign">Campaign Builder</option>
+                    <option value="run_voice_brief">Voice Brief</option>
+                    <option value="run_social_brief">Social Brief</option>
+                    <option value="run_ads_brief">Ads Brief</option>
+                    <option value="run_channel_report">Channel Report</option>
+                </select>
+                <input type="text" id="task-params" placeholder='{"query": "restaurants in Llanelli", "limit": 20, "dry_run": true}'>
+                <button class="btn" onclick="runTask()">Run</button>
+            </div>
+            <div id="terminal" class="terminal" style="display:none;"></div>
+        </div>
+
+        <!-- Recent Logs -->
+        <div class="card">
+            <h3>Recent Activity</h3>
+            <table class="log-table">
+                <thead>
+                    <tr><th>Time</th><th>Level</th><th>Message</th><th>Channel</th></tr>
+                </thead>
+                <tbody>
+                    {% for log in recent_logs %}
+                    <tr>
+                        <td style="color: var(--text-dim); white-space: nowrap;">{{ log.timestamp[11:19] if log.timestamp else '—' }}</td>
+                        <td><span class="log-level {{ log.level }}">{{ log.level }}</span></td>
+                        <td>{{ log.message[:80] }}{{ '...' if log.message|length > 80 else '' }}</td>
+                        <td style="color: var(--blue);">{{ log.channel or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        HARROW v1.0.0 — Goblin Media Network / Attic Tech Solutions<br>
+        System-generated blueprint. Final authority and dashboard verification remain with the Practitioner.
+    </div>
+
+    <script>
+        const API_BASE = '';
+
+        function getCookie(name) {
+            const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+            return v ? v[2] : null;
+        }
+
+        function headers() {
+            return { 'Content-Type': 'application/json' };
+        }
+
+        async function doAuth() {
+            const key = document.getElementById('auth-key').value;
+            try {
+                const r = await fetch(API_BASE + '/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: key }),
+                });
+                const d = await r.json();
+                if (d.data && d.data.authenticated) {
+                    location.reload();
+                } else {
+                    document.getElementById('auth-error').textContent = 'Invalid API key';
+                }
+            } catch (e) {
+                document.getElementById('auth-error').textContent = 'Connection error';
+            }
+        }
+
+        async function toggleGo(channel, arm) {
+            const url = arm ? `/go/${channel}` : `/revoke/${channel}`;
+            await fetch(API_BASE + url, { method: 'POST', headers: headers() });
+            location.reload();
+        }
+
+        async function resolveGate(gateId) {
+            await fetch(API_BASE + `/gates/${gateId}/resolve`, { method: 'POST', headers: headers() });
+            location.reload();
+        }
+
+        async function runTask() {
+            const task = document.getElementById('task-select').value;
+            let params = {};
+            try {
+                const raw = document.getElementById('task-params').value.trim();
+                if (raw) params = JSON.parse(raw);
+            } catch (e) {
+                alert('Invalid JSON in params');
+                return;
+            }
+
+            const terminal = document.getElementById('terminal');
+            terminal.style.display = 'block';
+            terminal.textContent = `> Running ${task}...\n`;
+
+            const r = await fetch(API_BASE + '/run', {
+                method: 'POST',
+                headers: headers(),
+                body: JSON.stringify({ task, params, caller: 'dashboard' }),
+            });
+            const d = await r.json();
+
+            if (d.error) {
+                terminal.textContent += `ERROR: ${d.error}\n`;
+                return;
+            }
+
+            const jobId = d.data.job_id;
+            terminal.textContent += `Job: ${jobId}\n`;
+
+            // Start SSE stream
+            const evtSource = new EventSource(API_BASE + `/stream/${jobId}`);
+            evtSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (data.type === 'log') {
+                    terminal.textContent += `[${data.level}] ${data.message}\n`;
+                } else if (data.type === 'status') {
+                    terminal.textContent += `--- ${data.status}: ${data.progress || ''}\n`;
+                } else if (data.type === 'complete') {
+                    terminal.textContent += `\n=== ${data.status.toUpperCase()} ===\n`;
+                    if (data.error) terminal.textContent += `Error: ${data.error}\n`;
+                    evtSource.close();
+                } else if (data.type === 'error') {
+                    terminal.textContent += `ERROR: ${data.message}\n`;
+                    evtSource.close();
+                }
+                terminal.scrollTop = terminal.scrollHeight;
+            };
+            evtSource.onerror = function() {
+                terminal.textContent += '\n[Stream closed]\n';
+                evtSource.close();
+            };
+        }
+
+        // Auth key enter handler
+        const authInput = document.getElementById('auth-key');
+        if (authInput) {
+            authInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') doAuth();
+            });
+        }
+    </script>
 </body>
 </html>
