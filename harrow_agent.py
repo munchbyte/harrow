@@ -12,9 +12,13 @@ from fastapi import FastAPI
 
 from core.db import init_db
 from core.logging import alog
-from routes.asp002 import router as asp002_router
+from routes.asp002 import router as asp002_router, register_task
 from routes.go_gates import router as go_gates_router
 from routes.hitl_routes import router as hitl_router
+
+# Channel task handlers (Phase 2)
+from channels.lead_gen import task_lead_harvest, task_ghost_audit
+from channels.email import task_copy_review
 
 # Agent metadata
 AGENT_ID = "harrow"
@@ -29,7 +33,13 @@ async def lifespan(application: FastAPI):
     """Startup and shutdown lifecycle."""
     # Startup
     init_db()
-    alog("INFO", f"HARROW {AGENT_VERSION} started on port {AGENT_PORT}", step="startup")
+
+    # Register Phase 2 tasks
+    register_task("run_lead_harvest", task_lead_harvest, "lead_gen")
+    register_task("run_ghost_audit", task_ghost_audit, "lead_gen")
+    register_task("run_copy_review", task_copy_review, "email")
+
+    alog("INFO", f"HARROW {AGENT_VERSION} started on port {AGENT_PORT} — 3 tasks registered", step="startup")
     yield
     # Shutdown
     alog("INFO", "HARROW shutting down", step="shutdown")
