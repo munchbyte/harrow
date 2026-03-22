@@ -1,0 +1,27 @@
+# Environment
+.env
+*.pyc
+__pycache__/
+
+# Database
+state/harrow.db
+state/harrow.db-journal
+
+# Logs
+logs/*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Google credentials
+*.json
+!package.json
+
+# Virtual env
+venv/
+.venv/
