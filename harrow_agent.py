@@ -20,6 +20,10 @@ from routes.hitl_routes import router as hitl_router
 from channels.lead_gen import task_lead_harvest, task_ghost_audit
 from channels.email import task_copy_review
 
+# Campaign (Phase 3)
+from campaign.builder import task_run_campaign
+from campaign.scheduler import start_scheduler, stop_scheduler
+
 # Agent metadata
 AGENT_ID = "harrow"
 AGENT_NAME = "HARROW — The Resonant CMO"
@@ -34,14 +38,19 @@ async def lifespan(application: FastAPI):
     # Startup
     init_db()
 
-    # Register Phase 2 tasks
+    # Register tasks
     register_task("run_lead_harvest", task_lead_harvest, "lead_gen")
     register_task("run_ghost_audit", task_ghost_audit, "lead_gen")
     register_task("run_copy_review", task_copy_review, "email")
+    register_task("run_campaign", task_run_campaign, "lead_gen")
 
-    alog("INFO", f"HARROW {AGENT_VERSION} started on port {AGENT_PORT} — 3 tasks registered", step="startup")
+    # Start autonomous follow-up scheduler
+    start_scheduler()
+
+    alog("INFO", f"HARROW {AGENT_VERSION} started on port {AGENT_PORT} — 4 tasks registered, scheduler active", step="startup")
     yield
     # Shutdown
+    stop_scheduler()
     alog("INFO", "HARROW shutting down", step="shutdown")
 
 
