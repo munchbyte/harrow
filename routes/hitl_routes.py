@@ -14,6 +14,9 @@ from fastapi.responses import JSONResponse
 
 from core.auth import require_key
 from core.hitl import resolve_gate, get_all_gates
+from core.logging import alog
+from core.log_sync import write_memory_log
+from notifications.ntfy import verify_approve_token
 
 router = APIRouter()
 
@@ -63,4 +66,33 @@ async def resolve(gate_id: int, caller: str = Depends(require_key)):
     return _envelope(gate)
 
 
-# Phase 4: GET /approve/{token} — One-Touch Receipt signed URL approval
+@router.get("/approve/{token}")
+async def one_touch_approve(token: str):
+    """
+    One-Touch Receipt — signed URL approval. No auth header required.
+    HMAC verified from token. Resolves the gate and redirects to dashboard.
+    """
+    gate_id, valid = verify_approve_token(token)
+
+    if not valid:
+        if gate_id:
+            return _error_envelope(f"Approve link for gate {gate_id} has expired or is invalid", status_code=403)
+        return _error_envelope("Invalid approve link", status_code=403)
+
+    gate = resolve_gate(gate_id, resolved_by="one_touch_receipt")
+    if not gate:
+        return _error_envelope(f"Gate {gate_id} not found or already resolved", status_code=404)
+
+    # Log to memory
+    write_memory_log(
+        event_type="gate_resolved",
+        channel=gate.get("channel"),
+        detail={"gate_id": gate_id, "resolver": "one_touch_receipt", "trigger": gate.get("trigger")},
+    )
+
+    alog("INFO", f"Gate {gate_id} resolved via One-Touch Receipt",
+         channel=gate.get("channel"), step="one_touch_approve")
+
+    # Return success (in production, would redirect to dashboard)
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/", status_code=303)

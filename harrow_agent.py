@@ -24,6 +24,11 @@ from channels.email import task_copy_review
 from campaign.builder import task_run_campaign
 from campaign.scheduler import start_scheduler, stop_scheduler
 
+# Channels (Phase 4)
+from channels.voice import task_voice_brief
+from channels.social import task_social_brief
+from channels.ads import task_ads_brief
+
 # Agent metadata
 AGENT_ID = "harrow"
 AGENT_NAME = "HARROW — The Resonant CMO"
@@ -43,11 +48,14 @@ async def lifespan(application: FastAPI):
     register_task("run_ghost_audit", task_ghost_audit, "lead_gen")
     register_task("run_copy_review", task_copy_review, "email")
     register_task("run_campaign", task_run_campaign, "lead_gen")
+    register_task("run_voice_brief", task_voice_brief, "voice")
+    register_task("run_social_brief", task_social_brief, "social")
+    register_task("run_ads_brief", task_ads_brief, "ads")
 
     # Start autonomous follow-up scheduler
     start_scheduler()
 
-    alog("INFO", f"HARROW {AGENT_VERSION} started on port {AGENT_PORT} — 4 tasks registered, scheduler active", step="startup")
+    alog("INFO", f"HARROW {AGENT_VERSION} started on port {AGENT_PORT} — 7 tasks registered, scheduler active", step="startup")
     yield
     # Shutdown
     stop_scheduler()

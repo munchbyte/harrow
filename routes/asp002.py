@@ -23,6 +23,7 @@ from pydantic import BaseModel
 from core.auth import require_key, validate_and_set_cookie
 from core.jobs import create_job, update_job, get_job, list_jobs
 from core.logging import alog, get_logs
+from engine.friction_filter import validate_run_request
 
 router = APIRouter()
 
@@ -113,6 +114,11 @@ async def run_task(body: RunRequest, auth_caller: str = Depends(require_key)):
         return _error_envelope(
             f"Unknown task '{task_name}'. Available: {', '.join(available)}"
         )
+
+    # Friction filter — validate required params
+    is_valid, error_msg = validate_run_request(task_name, body.params)
+    if not is_valid:
+        return _error_envelope(error_msg)
 
     handler, channel = _TASK_REGISTRY[task_name]
     job_id = create_job(task=task_name, caller=caller, channel=channel)
