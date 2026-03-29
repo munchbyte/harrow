@@ -44,14 +44,17 @@ async def dashboard(request: Request):
     pending_gates = get_pending_gates() if authenticated else []
     recent_logs = get_logs(limit=20) if authenticated else []
 
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "authenticated": authenticated,
-        "go_states": go_states,
-        "pending_gates": pending_gates,
-        "recent_logs": recent_logs,
-        "gate_count": len(pending_gates),
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={
+            "authenticated": authenticated,
+            "go_states": go_states,
+            "pending_gates": pending_gates,
+            "recent_logs": recent_logs,
+            "gate_count": len(pending_gates),
+        },
+    )
 
 
 @router.get("/stream/{job_id}")
