@@ -25,192 +25,574 @@
             color: var(--text);
             line-height: 1.5;
         }
+
+        /* Header */
         .header {
             background: var(--surface);
             border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 0.8rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .header h1 { color: var(--accent-light); font-size: 1.4rem; font-weight: 600; }
-        .header .subtitle { color: var(--text-dim); font-size: 0.85rem; }
+        .header h1 { color: var(--accent-light); font-size: 1.3rem; font-weight: 600; }
+        .header .subtitle { color: var(--text-dim); font-size: 0.8rem; }
         .header .status-badge {
-            background: var(--green);
-            color: #000;
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            background: var(--green); color: #000;
+            padding: 0.2rem 0.6rem; border-radius: 12px;
+            font-size: 0.7rem; font-weight: 600;
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-        .card {
+
+        /* Tab Navigation */
+        .tab-nav {
             background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; overflow-x: auto; padding: 0 1rem;
+            -webkit-overflow-scrolling: touch;
         }
-        .card h3 { color: var(--text); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .tab-nav::-webkit-scrollbar { height: 2px; }
+        .tab-nav::-webkit-scrollbar-thumb { background: var(--border); }
+        .tab-btn {
+            background: none; border: none; color: var(--text-dim);
+            padding: 0.7rem 1rem; font-size: 0.8rem; cursor: pointer;
+            white-space: nowrap; border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { color: var(--accent-light); border-bottom-color: var(--accent-light); font-weight: 600; }
+
+        /* Tab Panels */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Container */
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+
+        /* Instruction Box */
+        .instructions {
+            background: rgba(45,106,79,0.1);
+            border: 1px solid rgba(45,106,79,0.3);
+            border-radius: 6px; padding: 0.8rem 1rem;
+            margin-bottom: 1.2rem; font-size: 0.82rem; color: var(--text-dim);
+        }
+        .instructions strong { color: var(--accent-light); }
+
+        /* Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1.2rem; }
+        .card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1.1rem;
+        }
+        .card h3 { color: var(--text); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* Stats */
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin-bottom: 1.2rem; }
+        .stat-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1rem; text-align: center;
+        }
+        .stat-card .num { font-size: 2rem; font-weight: 700; color: var(--accent-light); }
+        .stat-card .label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+
+        /* GO States */
         .go-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
         .go-item {
             display: flex; align-items: center; justify-content: space-between;
             background: var(--bg); padding: 0.5rem 0.8rem; border-radius: 6px;
         }
-        .go-label { font-size: 0.85rem; text-transform: capitalize; }
+        .go-label { font-size: 0.82rem; text-transform: capitalize; }
         .go-dot { width: 10px; height: 10px; border-radius: 50%; }
         .go-dot.armed { background: var(--green); box-shadow: 0 0 6px var(--green); }
         .go-dot.revoked { background: var(--red); }
-        .stat { text-align: center; padding: 0.5rem; }
-        .stat .num { font-size: 2rem; font-weight: 700; color: var(--accent-light); }
-        .stat .label { font-size: 0.75rem; color: var(--text-dim); }
+
+        /* Gate List */
         .gate-list { list-style: none; }
         .gate-item {
-            background: var(--bg); padding: 0.6rem 0.8rem; border-radius: 6px;
+            background: var(--bg); padding: 0.5rem 0.8rem; border-radius: 6px;
             margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: space-between;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
         }
         .gate-trigger { flex: 1; }
-        .gate-channel { color: var(--blue); font-size: 0.75rem; margin-right: 0.5rem; }
+        .gate-channel { color: var(--blue); font-size: 0.72rem; margin-right: 0.5rem; }
+
+        /* Buttons */
         .btn {
             background: var(--accent); color: #fff; border: none;
-            padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
-            font-size: 0.8rem; font-weight: 500;
+            padding: 0.4rem 1rem; border-radius: 4px; cursor: pointer;
+            font-size: 0.82rem; font-weight: 500; transition: background 0.2s;
         }
         .btn:hover { background: var(--accent-light); }
-        .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.75rem; }
-        .log-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .log-table th { text-align: left; color: var(--text-dim); font-weight: 500; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); }
-        .log-table td { padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.72rem; }
+        .btn-red { background: var(--red); }
+        .btn-red:hover { background: #da3633; }
+
+        /* Forms */
+        .form-group { margin-bottom: 0.8rem; }
+        .form-group label { display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.03em; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; background: var(--bg); color: var(--text);
+            border: 1px solid var(--border); padding: 0.5rem 0.7rem;
+            border-radius: 4px; font-size: 0.85rem; font-family: inherit;
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; }
+        .form-check {
+            display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem;
+        }
+        .form-check input[type=checkbox] { width: auto; }
+
+        /* Terminal */
+        .terminal {
+            background: #000; color: #0f0; font-family: 'Courier New', monospace;
+            padding: 1rem; border-radius: 6px; font-size: 0.78rem;
+            max-height: 350px; overflow-y: auto; white-space: pre-wrap;
+            margin-top: 0.8rem; display: none;
+        }
+        .terminal.visible { display: block; }
+
+        /* Log Table */
+        .log-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+        .log-table th { text-align: left; color: var(--text-dim); font-weight: 500; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
+        .log-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
         .log-level { font-weight: 600; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 3px; }
         .log-level.INFO { color: var(--blue); }
         .log-level.WARN { color: var(--yellow); }
         .log-level.ERROR { color: var(--red); }
         .log-level.GATE { color: var(--accent-light); }
-        .terminal {
-            background: #000; color: #0f0; font-family: 'Courier New', monospace;
-            padding: 1rem; border-radius: 6px; font-size: 0.8rem;
-            max-height: 300px; overflow-y: auto; white-space: pre-wrap;
-        }
-        .run-form { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .run-form select, .run-form input {
-            background: var(--bg); color: var(--text); border: 1px solid var(--border);
-            padding: 0.4rem 0.6rem; border-radius: 4px; font-size: 0.85rem;
-        }
-        .run-form select { min-width: 180px; }
-        .run-form input { flex: 1; min-width: 200px; }
+
+        /* Reports */
+        .report-section { margin-bottom: 1.5rem; }
+        .report-section h3 { margin-bottom: 0.6rem; }
+        .export-btns { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+
+        /* Login */
         .login-box { max-width: 360px; margin: 4rem auto; text-align: center; }
         .login-box input {
             width: 100%; background: var(--bg); color: var(--text);
             border: 1px solid var(--border); padding: 0.6rem; border-radius: 4px;
             margin: 0.5rem 0; font-size: 0.9rem;
         }
-        .footer { text-align: center; color: var(--text-dim); font-size: 0.75rem; padding: 2rem; }
+
+        /* Footer */
+        .footer { text-align: center; color: var(--text-dim); font-size: 0.7rem; padding: 1.5rem; }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <div class="header">
         <div>
             <h1>HARROW</h1>
             <span class="subtitle">The Resonant CMO — Control Centre</span>
         </div>
-        <span class="status-badge">ONLINE</span>
+        <span class="status-badge" id="status-badge">ONLINE</span>
     </div>
 
     {% if not authenticated %}
+    <!-- Login -->
     <div class="container">
         <div class="login-box card">
             <h3>Authenticate</h3>
-            <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem;">Enter your API key to access the Control Centre.</p>
+            <p style="color: var(--text-dim); font-size: 0.82rem; margin-bottom: 1rem;">Enter your API key to access the Control Centre.</p>
             <input type="password" id="auth-key" placeholder="API Key">
             <button class="btn" onclick="doAuth()" style="width: 100%; margin-top: 0.5rem; padding: 0.5rem;">Authenticate</button>
-            <p id="auth-error" style="color: var(--red); font-size: 0.8rem; margin-top: 0.5rem;"></p>
+            <p id="auth-error" style="color: var(--red); font-size: 0.78rem; margin-top: 0.5rem;"></p>
         </div>
     </div>
     {% else %}
-    <div class="container">
-        <!-- GO States + Gate Count -->
-        <div class="grid">
-            <div class="card">
-                <h3>GO States</h3>
-                <div class="go-grid">
-                    {% for channel, state in go_states.items() %}
-                    <div class="go-item">
-                        <span class="go-label">{{ channel }}</span>
-                        <div style="display:flex;align-items:center;gap:0.4rem;">
-                            <span class="go-dot {{ 'armed' if state.armed else 'revoked' }}"></span>
-                            <button class="btn btn-sm" onclick="toggleGo('{{ channel }}', {{ 'false' if state.armed else 'true' }})">
-                                {{ 'Revoke' if state.armed else 'Arm' }}
-                            </button>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('home')">Home</button>
+        <button class="tab-btn" onclick="switchTab('lead-harvest')">Lead Harvest</button>
+        <button class="tab-btn" onclick="switchTab('ghost-audit')">Ghost Audit</button>
+        <button class="tab-btn" onclick="switchTab('copy-review')">Copy Review</button>
+        <button class="tab-btn" onclick="switchTab('campaign')">Campaign Builder</button>
+        <button class="tab-btn" onclick="switchTab('voice')">Voice Brief</button>
+        <button class="tab-btn" onclick="switchTab('social')">Social Brief</button>
+        <button class="tab-btn" onclick="switchTab('ads')">Ads Brief</button>
+        <button class="tab-btn" onclick="switchTab('reports')">Reports</button>
+    </nav>
+
+    <!-- ═══════════════ HOME TAB ═══════════════ -->
+    <div class="tab-panel active" id="tab-home">
+        <div class="container">
+            <div class="instructions">
+                <strong>Home</strong> — Overview of HARROW's current state. GO states control which channels can send outbound. HITL gates are pending human approvals. Arm or revoke channels here, and approve gates as they come in.
+            </div>
+
+            <div class="stat-grid" id="home-stats">
+                <div class="stat-card"><div class="num" id="stat-jobs">—</div><div class="label">Jobs This Week</div></div>
+                <div class="stat-card"><div class="num" id="stat-gates" style="color:var(--yellow)">{{ gate_count }}</div><div class="label">Pending Gates</div></div>
+                <div class="stat-card"><div class="num" id="stat-campaigns">—</div><div class="label">Campaigns</div></div>
+                <div class="stat-card"><div class="num" id="stat-logs">—</div><div class="label">Log Entries</div></div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>GO States</h3>
+                    <div class="go-grid" id="go-states">
+                        {% for channel, state in go_states.items() %}
+                        <div class="go-item">
+                            <span class="go-label">{{ channel }}</span>
+                            <div style="display:flex;align-items:center;gap:0.4rem;">
+                                <span class="go-dot {{ 'armed' if state.armed else 'revoked' }}"></span>
+                                <button class="btn btn-sm" onclick="toggleGo('{{ channel }}', {{ 'false' if state.armed else 'true' }})">
+                                    {{ 'Revoke' if state.armed else 'Arm' }}
+                                </button>
+                            </div>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                </div>
+                <div class="card">
+                    <h3>Pending HITL Gates</h3>
+                    <div id="home-gates">
+                        {% if pending_gates %}
+                        <ul class="gate-list">
+                            {% for gate in pending_gates %}
+                            <li class="gate-item">
+                                <span class="gate-channel">[{{ gate.channel or '—' }}]</span>
+                                <span class="gate-trigger">{{ gate.trigger }}</span>
+                                <button class="btn btn-sm" onclick="resolveGate({{ gate.id }})">Approve</button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p style="color:var(--text-dim);font-size:0.82rem;">No pending gates.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
+
             <div class="card">
-                <div class="stat">
-                    <div class="num" style="color: {{ 'var(--yellow)' if gate_count > 0 else 'var(--green)' }}">{{ gate_count }}</div>
-                    <div class="label">Pending HITL Gates</div>
-                </div>
+                <h3>Recent Activity</h3>
+                <table class="log-table">
+                    <thead><tr><th>Time</th><th>Level</th><th>Message</th><th>Channel</th></tr></thead>
+                    <tbody id="home-log-body">
+                        {% for log in recent_logs %}
+                        <tr>
+                            <td style="color:var(--text-dim);white-space:nowrap;">{{ log.timestamp[11:19] if log.timestamp else '—' }}</td>
+                            <td><span class="log-level {{ log.level }}">{{ log.level }}</span></td>
+                            <td>{{ log.message[:80] }}{{ '...' if log.message|length > 80 else '' }}</td>
+                            <td style="color:var(--blue);">{{ log.channel or '—' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        </div>
-
-        <!-- HITL Gates -->
-        {% if pending_gates %}
-        <div class="card" style="margin-bottom: 1.5rem;">
-            <h3>Pending Gates</h3>
-            <ul class="gate-list">
-                {% for gate in pending_gates %}
-                <li class="gate-item">
-                    <span class="gate-channel">[{{ gate.channel or '—' }}]</span>
-                    <span class="gate-trigger">{{ gate.trigger }}</span>
-                    <button class="btn btn-sm" onclick="resolveGate({{ gate.id }})">Approve</button>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-
-        <!-- Run Task -->
-        <div class="card" style="margin-bottom: 1.5rem;">
-            <h3>Run Task</h3>
-            <div class="run-form">
-                <select id="task-select">
-                    <option value="run_lead_harvest">Lead Harvest</option>
-                    <option value="run_ghost_audit">Ghost Audit</option>
-                    <option value="run_copy_review">Copy Review</option>
-                    <option value="run_campaign">Campaign Builder</option>
-                    <option value="run_voice_brief">Voice Brief</option>
-                    <option value="run_social_brief">Social Brief</option>
-                    <option value="run_ads_brief">Ads Brief</option>
-                    <option value="run_channel_report">Channel Report</option>
-                </select>
-                <input type="text" id="task-params" placeholder='{"query": "restaurants in Llanelli", "limit": 20, "dry_run": true}'>
-                <button class="btn" onclick="runTask()">Run</button>
-            </div>
-            <div id="terminal" class="terminal" style="display:none;"></div>
-        </div>
-
-        <!-- Recent Logs -->
-        <div class="card">
-            <h3>Recent Activity</h3>
-            <table class="log-table">
-                <thead>
-                    <tr><th>Time</th><th>Level</th><th>Message</th><th>Channel</th></tr>
-                </thead>
-                <tbody>
-                    {% for log in recent_logs %}
-                    <tr>
-                        <td style="color: var(--text-dim); white-space: nowrap;">{{ log.timestamp[11:19] if log.timestamp else '—' }}</td>
-                        <td><span class="log-level {{ log.level }}">{{ log.level }}</span></td>
-                        <td>{{ log.message[:80] }}{{ '...' if log.message|length > 80 else '' }}</td>
-                        <td style="color: var(--blue);">{{ log.channel or '—' }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
     </div>
+
+    <!-- ═══════════════ LEAD HARVEST TAB ═══════════════ -->
+    <div class="tab-panel" id="tab-lead-harvest">
+        <div class="container">
+            <div class="instructions">
+                <strong>Lead Harvest</strong> — Scrape Google Maps via Outscraper for leads matching your query. Results are ICP-filtered (hard rejects removed, soft warns flagged) and written to the Master Lead Sheet. Use <em>dry_run</em> to preview without writing to Sheets.
+            </div>
+            <div class="card">
+                <h3>Run Lead Harvest</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Search Query</label>
+                        <input type="text" id="lh-query" placeholder="restaurants in Llanelli">
+                    </div>
+                    <div class="form-group">
+                        <label>Limit</label>
+                        <input type="number" id="lh-limit" value="20" min="1" max="100">
+                    </div>
+                </div>
+                <div class="form-check" style="margin-bottom:0.8rem;">
+                    <input type="checkbox" id="lh-dry" checked> <label for="lh-dry">Dry Run (no Sheets write)</label>
+                </div>
+                <button class="btn" onclick="runLeadHarvest()">Run Harvest</button>
+                <div class="terminal" id="term-lead-harvest"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ GHOST AUDIT TAB ═══════════════ -->
+    <div class="tab-panel" id="tab-ghost-audit">
+        <div class="container">
+            <div class="instructions">
+                <strong>Ghost Audit</strong> — Scrape lead websites via Firecrawl and analyse with Claude Haiku. Returns a leak_score (1-10), leak_type (BOOKING, CONTACT, SPEED, TRUST, CONTENT, NONE), and a leak_label. Integrates the Liability Predictor for niche-specific failure context. Use <em>dry_run</em> to audit without updating Sheets.
+            </div>
+            <div class="card">
+                <h3>Run Ghost Audit</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Lead ID (optional — blank audits all unaudited)</label>
+                        <input type="text" id="ga-lead" placeholder="Leave blank to audit all">
+                    </div>
+                    <div class="form-group">
+                        <label>Limit</label>
+                        <input type="number" id="ga-limit" value="10" min="1" max="50">
+                    </div>
+                </div>
+                <div class="form-check" style="margin-bottom:0.8rem;">
+                    <input type="checkbox" id="ga-dry" checked> <label for="ga-dry">Dry Run</label>
+                </div>
+                <button class="btn" onclick="runGhostAudit()">Run Audit</button>
+                <div class="terminal" id="term-ghost-audit"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ COPY REVIEW TAB ═══════════════ -->
+    <div class="tab-panel" id="tab-copy-review">
+        <div class="container">
+            <div class="instructions">
+                <strong>Copy Review</strong> — Paste any outbound copy (email, DM, ad text) and HARROW will run the Five-Gate Check (G1-G5) plus Voss Compliance (VC1/VC2). Each gate returns PASS or FAIL with a reason. Use this to validate copy before sending.
+            </div>
+            <div class="card">
+                <h3>Review Copy</h3>
+                <div class="form-group">
+                    <label>Copy Text</label>
+                    <textarea id="cr-text" placeholder="Paste your outbound copy here..."></textarea>
+                </div>
+                <button class="btn" onclick="runCopyReview()">Review Copy</button>
+                <div class="terminal" id="term-copy-review"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ CAMPAIGN BUILDER TAB ═══════════════ -->
+    <div class="tab-panel" id="tab-campaign">
+        <div class="container">
+            <div class="instructions">
+                <strong>Campaign Builder</strong> — Full 7-stage pipeline: Define, Harvest, Audit, Segment, Generate Copy, Review, GO. Provide a target sector and location — HARROW handles the rest. A HITL gate fires at Stage 6 for your approval before anything sends. Use <em>dry_run</em> to run the full pipeline without arming the email channel.
+            </div>
+            <div class="card">
+                <h3>Build Campaign</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sector</label>
+                        <input type="text" id="cb-sector" placeholder="restaurants">
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="cb-location" placeholder="Llanelli">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Lead Limit</label>
+                        <input type="number" id="cb-limit" value="20" min="1" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Tone</label>
+                        <select id="cb-tone">
+                            <option value="dj">Late-Night FM DJ (default)</option>
+                            <option value="formal">Formal</option>
+                            <option value="concise">Concise</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-check" style="margin-bottom:0.8rem;">
+                    <input type="checkbox" id="cb-dry" checked> <label for="cb-dry">Dry Run</label>
+                </div>
+                <button class="btn" onclick="runCampaign()">Build Campaign</button>
+                <div class="terminal" id="term-campaign"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ VOICE BRIEF TAB ═══════════════ -->
+    <div class="tab-panel" id="tab-voice">
+        <div class="container">
+            <div class="instructions">
+                <strong>Voice Brief</strong> — Generate a Vapi voice agent brief via Claude Sonnet. Output includes greeting, key messages, qualifying question, objection handling, close, and a Vapi system prompt. Outbound scripts fire a HITL gate before the brief is returned.
+            </div>
+            <div class="card">
+                <h3>Generate Voice Brief</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Business Name</label>
+                        <input type="text" id="vb-name" placeholder="The Red Dragon Inn">
+                    </div>
+                    <div class="form-group">
+                        <label>Leak Type</label>
+                        <select id="vb-leak">
+                            <option value="BOOKING">BOOKING</option>
+                            <option value="CONTACT">CONTACT</option>
+                            <option value="SPEED">SPEED</option>
+                            <option value="TRUST">TRUST</option>
+                            <option value="CONTENT">CONTENT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Leak Label</label>
+                        <input type="text" id="vb-label" placeholder="No online booking system">
+                    </div>
+                    <div class="form-group">
+                        <label>Script Type</label>
+                        <select id="vb-script">
+                            <option value="inbound">Inbound</option>
+                            <option value="outbound">Outbound (fires HITL gate)</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn" onclick="runVoiceBrief()">Generate Brief</button>
+                <div class="terminal" id="term-voice"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ SOCIAL BRIEF TAB ═══════════════ -->
+    <div class="tab-panel" id="tab-social">
+        <div class="container">
+            <div class="instructions">
+                <strong>Social Brief</strong> — Generate a content brief via Claude Sonnet using the PAC-Receipt Loop. Anti-Hype constraint enforced. Fires a HITL gate before routing to Push CMS — publishing is irreversible.
+            </div>
+            <div class="card">
+                <h3>Generate Social Brief</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <select id="sb-platform">
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="x">X (Twitter)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Content Type</label>
+                        <select id="sb-type">
+                            <option value="post">Post</option>
+                            <option value="article">Article</option>
+                            <option value="carousel">Carousel</option>
+                            <option value="story">Story</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Topic</label>
+                        <input type="text" id="sb-topic" placeholder="Why audits matter more than ads">
+                    </div>
+                    <div class="form-group">
+                        <label>Sector</label>
+                        <input type="text" id="sb-sector" placeholder="hospitality">
+                    </div>
+                </div>
+                <button class="btn" onclick="runSocialBrief()">Generate Brief</button>
+                <div class="terminal" id="term-social"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ ADS BRIEF TAB ═══════════════ -->
+    <div class="tab-panel" id="tab-ads">
+        <div class="container">
+            <div class="instructions">
+                <strong>Ads Brief</strong> — Generate a paid ad campaign brief via Claude Sonnet. Budget ceiling is checked. A HITL gate fires before the brief is returned — always. Output includes audience, ad copy, KPIs, and Engine/Dashboard layers.
+            </div>
+            <div class="card">
+                <h3>Generate Ads Brief</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <select id="ab-platform">
+                            <option value="google_ads">Google Ads</option>
+                            <option value="facebook_ads">Facebook Ads</option>
+                            <option value="linkedin_ads">LinkedIn Ads</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Campaign Type</label>
+                        <select id="ab-type">
+                            <option value="lead_gen">Lead Generation</option>
+                            <option value="awareness">Brand Awareness</option>
+                            <option value="traffic">Traffic</option>
+                            <option value="retargeting">Retargeting</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Objective</label>
+                        <input type="text" id="ab-objective" placeholder="Generate qualified leads for web audit service">
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Budget (GBP)</label>
+                        <input type="number" id="ab-budget" value="500" min="50" max="10000">
+                    </div>
+                </div>
+                <button class="btn" onclick="runAdsBrief()">Generate Brief</button>
+                <div class="terminal" id="term-ads"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ REPORTS TAB ═══════════════ -->
+    <div class="tab-panel" id="tab-reports">
+        <div class="container">
+            <div class="instructions">
+                <strong>Reports</strong> — Full analytics across all channels. Channel status summary, lead funnel breakdown, copy gate pass rates, campaign history, and memory log timeline. Click <em>Export</em> to download data as CSV or JSON.
+            </div>
+
+            <div class="export-btns">
+                <button class="btn" onclick="exportData('csv')">Export CSV</button>
+                <button class="btn" onclick="exportData('json')">Export JSON</button>
+                <button class="btn" onclick="loadReports()">Refresh Data</button>
+            </div>
+
+            <div class="report-section">
+                <div class="stat-grid" id="report-stats">
+                    <div class="stat-card"><div class="num" id="rpt-total-jobs">—</div><div class="label">Total Jobs</div></div>
+                    <div class="stat-card"><div class="num" id="rpt-complete-jobs">—</div><div class="label">Completed</div></div>
+                    <div class="stat-card"><div class="num" id="rpt-failed-jobs">—</div><div class="label">Failed</div></div>
+                    <div class="stat-card"><div class="num" id="rpt-total-gates">—</div><div class="label">Total Gates</div></div>
+                    <div class="stat-card"><div class="num" id="rpt-resolved-gates">—</div><div class="label">Resolved</div></div>
+                </div>
+            </div>
+
+            <div class="report-section">
+                <div class="card">
+                    <h3>Activity Log</h3>
+                    <div class="form-row" style="margin-bottom:0.8rem;">
+                        <div class="form-group">
+                            <label>Channel</label>
+                            <select id="rpt-channel" onchange="filterReportLogs()">
+                                <option value="">All</option>
+                                <option value="lead_gen">Lead Gen</option>
+                                <option value="email">Email</option>
+                                <option value="voice">Voice</option>
+                                <option value="social">Social</option>
+                                <option value="ads">Ads</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Level</label>
+                            <select id="rpt-level" onchange="filterReportLogs()">
+                                <option value="">All</option>
+                                <option value="INFO">INFO</option>
+                                <option value="WARN">WARN</option>
+                                <option value="ERROR">ERROR</option>
+                                <option value="GATE">GATE</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table class="log-table">
+                        <thead><tr><th>Time</th><th>Level</th><th>Message</th><th>Channel</th><th>Job</th></tr></thead>
+                        <tbody id="rpt-log-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="report-section">
+                <div class="card">
+                    <h3>Gate History</h3>
+                    <table class="log-table">
+                        <thead><tr><th>ID</th><th>Trigger</th><th>Channel</th><th>Status</th><th>Created</th><th>Resolved By</th></tr></thead>
+                        <tbody id="rpt-gate-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% endif %}
 
     <div class="footer">
@@ -219,108 +601,235 @@
     </div>
 
     <script>
-        const API_BASE = '';
+    /* ═══════════════ GLOBALS ═══════════════ */
+    let reportLogs = [];
+    let reportGates = [];
 
-        function getCookie(name) {
-            const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
-            return v ? v[2] : null;
-        }
+    function hdrs() { return { 'Content-Type': 'application/json' }; }
 
-        function headers() {
-            return { 'Content-Type': 'application/json' };
-        }
-
-        async function doAuth() {
-            const key = document.getElementById('auth-key').value;
-            try {
-                const r = await fetch(API_BASE + '/auth', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: key }),
-                });
-                const d = await r.json();
-                if (d.data && d.data.authenticated) {
-                    location.reload();
-                } else {
-                    document.getElementById('auth-error').textContent = 'Invalid API key';
-                }
-            } catch (e) {
-                document.getElementById('auth-error').textContent = 'Connection error';
-            }
-        }
-
-        async function toggleGo(channel, arm) {
-            const url = arm ? `/go/${channel}` : `/revoke/${channel}`;
-            await fetch(API_BASE + url, { method: 'POST', headers: headers() });
-            location.reload();
-        }
-
-        async function resolveGate(gateId) {
-            await fetch(API_BASE + `/gates/${gateId}/resolve`, { method: 'POST', headers: headers() });
-            location.reload();
-        }
-
-        async function runTask() {
-            const task = document.getElementById('task-select').value;
-            let params = {};
-            try {
-                const raw = document.getElementById('task-params').value.trim();
-                if (raw) params = JSON.parse(raw);
-            } catch (e) {
-                alert('Invalid JSON in params');
-                return;
-            }
-
-            const terminal = document.getElementById('terminal');
-            terminal.style.display = 'block';
-            terminal.textContent = `> Running ${task}...\n`;
-
-            const r = await fetch(API_BASE + '/run', {
-                method: 'POST',
-                headers: headers(),
-                body: JSON.stringify({ task, params, caller: 'dashboard' }),
-            });
+    /* ═══════════════ AUTH ═══════════════ */
+    async function doAuth() {
+        const key = document.getElementById('auth-key').value;
+        try {
+            const r = await fetch('/auth', { method: 'POST', headers: hdrs(), body: JSON.stringify({ token: key }) });
             const d = await r.json();
+            if (d.data && d.data.authenticated) location.reload();
+            else document.getElementById('auth-error').textContent = 'Invalid API key';
+        } catch (e) {
+            document.getElementById('auth-error').textContent = 'Connection error';
+        }
+    }
+    const authInput = document.getElementById('auth-key');
+    if (authInput) authInput.addEventListener('keypress', e => { if (e.key === 'Enter') doAuth(); });
 
-            if (d.error) {
-                terminal.textContent += `ERROR: ${d.error}\n`;
-                return;
-            }
+    /* ═══════════════ TAB SWITCHING ═══════════════ */
+    function switchTab(id) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        const panel = document.getElementById('tab-' + id);
+        if (panel) panel.classList.add('active');
+        event.target.classList.add('active');
 
+        if (id === 'reports') loadReports();
+    }
+
+    /* ═══════════════ GO STATES ═══════════════ */
+    async function toggleGo(channel, arm) {
+        const url = arm ? `/go/${channel}` : `/revoke/${channel}`;
+        await fetch(url, { method: 'POST', headers: hdrs() });
+        location.reload();
+    }
+
+    /* ═══════════════ HITL GATES ═══════════════ */
+    async function resolveGate(gateId) {
+        await fetch(`/gates/${gateId}/resolve`, { method: 'POST', headers: hdrs() });
+        location.reload();
+    }
+
+    /* ═══════════════ SHARED TASK RUNNER ═══════════════ */
+    function runTask(taskName, params, terminalId) {
+        const term = document.getElementById(terminalId);
+        term.classList.add('visible');
+        term.textContent = `> Running ${taskName}...\n`;
+
+        fetch('/run', {
+            method: 'POST', headers: hdrs(),
+            body: JSON.stringify({ task: taskName, params: params, caller: 'dashboard' }),
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.error) { term.textContent += `ERROR: ${d.error}\n`; return; }
             const jobId = d.data.job_id;
-            terminal.textContent += `Job: ${jobId}\n`;
+            term.textContent += `Job: ${jobId}\n\n`;
 
-            // Start SSE stream
-            const evtSource = new EventSource(API_BASE + `/stream/${jobId}`);
-            evtSource.onmessage = function(event) {
-                const data = JSON.parse(event.data);
+            const es = new EventSource(`/stream/${jobId}`);
+            es.onmessage = function(evt) {
+                const data = JSON.parse(evt.data);
                 if (data.type === 'log') {
-                    terminal.textContent += `[${data.level}] ${data.message}\n`;
+                    term.textContent += `[${data.level}] ${data.message}\n`;
                 } else if (data.type === 'status') {
-                    terminal.textContent += `--- ${data.status}: ${data.progress || ''}\n`;
+                    term.textContent += `--- ${data.status}: ${data.progress || ''}\n`;
                 } else if (data.type === 'complete') {
-                    terminal.textContent += `\n=== ${data.status.toUpperCase()} ===\n`;
-                    if (data.error) terminal.textContent += `Error: ${data.error}\n`;
-                    evtSource.close();
+                    term.textContent += `\n=== ${data.status.toUpperCase()} ===\n`;
+                    if (data.result) {
+                        try { term.textContent += JSON.stringify(JSON.parse(data.result), null, 2) + '\n'; }
+                        catch(e) { term.textContent += data.result + '\n'; }
+                    }
+                    if (data.error) term.textContent += `Error: ${data.error}\n`;
+                    es.close();
                 } else if (data.type === 'error') {
-                    terminal.textContent += `ERROR: ${data.message}\n`;
-                    evtSource.close();
+                    term.textContent += `ERROR: ${data.message}\n`;
+                    es.close();
                 }
-                terminal.scrollTop = terminal.scrollHeight;
+                term.scrollTop = term.scrollHeight;
             };
-            evtSource.onerror = function() {
-                terminal.textContent += '\n[Stream closed]\n';
-                evtSource.close();
-            };
-        }
+            es.onerror = function() { term.textContent += '\n[Stream closed]\n'; es.close(); };
+        })
+        .catch(e => { term.textContent += `ERROR: ${e.message}\n`; });
+    }
 
-        // Auth key enter handler
-        const authInput = document.getElementById('auth-key');
-        if (authInput) {
-            authInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') doAuth();
-            });
+    /* ═══════════════ TASK RUNNERS ═══════════════ */
+    function runLeadHarvest() {
+        runTask('run_lead_harvest', {
+            query: document.getElementById('lh-query').value,
+            limit: parseInt(document.getElementById('lh-limit').value),
+            dry_run: document.getElementById('lh-dry').checked,
+        }, 'term-lead-harvest');
+    }
+
+    function runGhostAudit() {
+        const params = { limit: parseInt(document.getElementById('ga-limit').value), dry_run: document.getElementById('ga-dry').checked };
+        const leadId = document.getElementById('ga-lead').value.trim();
+        if (leadId) params.lead_id = leadId;
+        runTask('run_ghost_audit', params, 'term-ghost-audit');
+    }
+
+    function runCopyReview() {
+        runTask('run_copy_review', {
+            copy_text: document.getElementById('cr-text').value,
+        }, 'term-copy-review');
+    }
+
+    function runCampaign() {
+        runTask('run_campaign', {
+            sector: document.getElementById('cb-sector').value,
+            location: document.getElementById('cb-location').value,
+            limit: parseInt(document.getElementById('cb-limit').value),
+            tone: document.getElementById('cb-tone').value,
+            dry_run: document.getElementById('cb-dry').checked,
+        }, 'term-campaign');
+    }
+
+    function runVoiceBrief() {
+        runTask('run_voice_brief', {
+            business_name: document.getElementById('vb-name').value,
+            leak_type: document.getElementById('vb-leak').value,
+            leak_label: document.getElementById('vb-label').value,
+            script_type: document.getElementById('vb-script').value,
+        }, 'term-voice');
+    }
+
+    function runSocialBrief() {
+        runTask('run_social_brief', {
+            platform: document.getElementById('sb-platform').value,
+            content_type: document.getElementById('sb-type').value,
+            topic: document.getElementById('sb-topic').value,
+            sector: document.getElementById('sb-sector').value,
+        }, 'term-social');
+    }
+
+    function runAdsBrief() {
+        runTask('run_ads_brief', {
+            platform: document.getElementById('ab-platform').value,
+            campaign_type: document.getElementById('ab-type').value,
+            objective: document.getElementById('ab-objective').value,
+            monthly_budget_gbp: parseInt(document.getElementById('ab-budget').value),
+        }, 'term-ads');
+    }
+
+    /* ═══════════════ REPORTS ═══════════════ */
+    async function loadReports() {
+        try {
+            const [logsR, gatesR] = await Promise.all([
+                fetch('/logs?limit=200', { headers: hdrs() }).then(r => r.json()),
+                fetch('/gates?status=', { headers: hdrs() }).then(r => r.json()),
+            ]);
+
+            reportLogs = logsR.data?.entries || [];
+            reportGates = gatesR.data?.gates || [];
+
+            // Stats
+            const jobs = new Set(reportLogs.filter(l => l.step === 'job_create').map(l => l.job_id));
+            const completeLogs = reportLogs.filter(l => l.message && l.message.includes('complete'));
+            const failLogs = reportLogs.filter(l => l.level === 'ERROR');
+
+            document.getElementById('rpt-total-jobs').textContent = jobs.size || '0';
+            document.getElementById('rpt-complete-jobs').textContent = completeLogs.length || '0';
+            document.getElementById('rpt-failed-jobs').textContent = failLogs.length || '0';
+            document.getElementById('rpt-total-gates').textContent = reportGates.length || '0';
+            document.getElementById('rpt-resolved-gates').textContent = reportGates.filter(g => g.status === 'resolved').length || '0';
+
+            filterReportLogs();
+            renderGateHistory();
+        } catch (e) {
+            console.error('Failed to load reports:', e);
         }
+    }
+
+    function filterReportLogs() {
+        const ch = document.getElementById('rpt-channel').value;
+        const lv = document.getElementById('rpt-level').value;
+        let filtered = reportLogs;
+        if (ch) filtered = filtered.filter(l => l.channel === ch);
+        if (lv) filtered = filtered.filter(l => l.level === lv);
+
+        const tbody = document.getElementById('rpt-log-body');
+        tbody.innerHTML = filtered.slice(0, 100).map(l => `
+            <tr>
+                <td style="color:var(--text-dim);white-space:nowrap;">${(l.timestamp||'').substring(11,19)}</td>
+                <td><span class="log-level ${l.level}">${l.level}</span></td>
+                <td>${(l.message||'').substring(0,100)}</td>
+                <td style="color:var(--blue);">${l.channel||'—'}</td>
+                <td style="color:var(--text-dim);font-size:0.7rem;">${(l.job_id||'').substring(0,8)}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderGateHistory() {
+        const tbody = document.getElementById('rpt-gate-body');
+        tbody.innerHTML = reportGates.slice(0, 50).map(g => `
+            <tr>
+                <td>${g.id}</td>
+                <td>${(g.trigger||'').substring(0,60)}</td>
+                <td style="color:var(--blue);">${g.channel||'—'}</td>
+                <td><span class="log-level ${g.status === 'resolved' ? 'INFO' : 'WARN'}">${g.status}</span></td>
+                <td style="color:var(--text-dim);white-space:nowrap;">${(g.created_at||'').substring(0,19)}</td>
+                <td>${g.resolved_by||'—'}</td>
+            </tr>
+        `).join('');
+    }
+
+    /* ═══════════════ EXPORT ═══════════════ */
+    function exportData(format) {
+        if (format === 'json') {
+            const blob = new Blob([JSON.stringify({ logs: reportLogs, gates: reportGates }, null, 2)], { type: 'application/json' });
+            downloadBlob(blob, 'harrow-report.json');
+        } else {
+            let csv = 'timestamp,level,message,channel,job_id\n';
+            reportLogs.forEach(l => {
+                csv += `"${l.timestamp||''}","${l.level||''}","${(l.message||'').replace(/"/g,'""')}","${l.channel||''}","${l.job_id||''}"\n`;
+            });
+            downloadBlob(new Blob([csv], { type: 'text/csv' }), 'harrow-report.csv');
+        }
+    }
+
+    function downloadBlob(blob, filename) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
     </script>
 </body>
 </html>
