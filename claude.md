@@ -14,14 +14,30 @@ gspread, ntfy.sh, Nginx, systemd, Certbot
 Hosting: Hostinger VPS. VCS: GitHub (main=prod, dev=staging)
 
 ## Folder Structure
-core/        db, auth, jobs, logging, hitl, go_state, log_sync
+core/        db, auth, jobs, logging, hitl, go_state, log_sync, sub_agents
 channels/    lead_gen, email, voice, social, ads
 engine/      claude_client, voss, five_gate, liability, friction_filter
 campaign/    builder, scheduler, copy_variants
 notifications/ ntfy
+integrations/ push_client
 routes/      asp002, go_gates, hitl_routes, dashboard, settings
+scripts/     smoke_test_push_client
 templates/   index.html
 state/       harrow.db
+
+## Sub-agents
+
+### Push CMS — Tier 3 (LIVE since 2026-05-01)
+- URL (internal, used for HARROW->Push): http://localhost:8004
+- URL (public, reference only): https://push.goblinmedia.net
+- Auth: X-API-Key header, value in env PUSH_CMS_API_KEY
+- Client module: integrations/push_client.py
+- Registry entry: core/sub_agents.py SUB_AGENTS["push_cms"]
+- Primary task HARROW dispatches: publish_content_brief
+- All HARROW-dispatchable tasks: publish_content_brief, run_draft, run_carousel_brief, run_metrics_sync, run_archive
+- Push runs its own cron for: scheduler, metrics sync, weekly improvement brief, token check, db backup, scout cycle
+- HARROW's /health probes Push /health non-blocking — Push being down does NOT make HARROW unhealthy (ASP-001).
+- Smoke test: python -m scripts.smoke_test_push_client
 
 ## Environment Variables
 HARROW_API_KEY, ANTHROPIC_API_KEY, OUTSCRAPER_API_KEY

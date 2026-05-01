@@ -7,11 +7,13 @@ This is the main entry point. It imports routes only — no business logic here.
 """
 
 import time
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from core.db import init_db
 from core.logging import alog
+from core.sub_agents import list_live as list_live_sub_agents
 from routes.asp002 import router as asp002_router, register_task
 from routes.go_gates import router as go_gates_router
 from routes.hitl_routes import router as hitl_router
@@ -86,9 +88,39 @@ app.include_router(dashboard_router)
 app.include_router(settings_router)
 
 
+async def _probe_sub_agent(entry: dict) -> tuple[str, str]:
+    """Probe one sub-agent's /health. Returns (agent_id, 'ok'|'unreachable')."""
+    agent_id = entry["agent_id"]
+    health_fn = entry.get("health_fn")
+    if health_fn is None:
+        return agent_id, "unknown"
+    try:
+        result = await health_fn()
+        ok = isinstance(result, dict) and (
+            result.get("status") == "ok" or result.get("data", {}).get("status") == "ok"
+        )
+        return agent_id, "ok" if ok else "unreachable"
+    except Exception:
+        # ASP-001: a sub-agent being down must NOT make HARROW unhealthy.
+        return agent_id, "unreachable"
+
+
 @app.get("/health")
 async def health():
-    """ASP-002 health check. No auth required."""
+    """ASP-002 health check. No auth required.
+
+    Includes a non-blocking sub_agents block. Sub-agent failures never
+    affect HARROW's own status — sovereignty per ASP-001.
+    """
+    sub_agent_results: dict[str, str] = {}
+    live = list_live_sub_agents()
+    if live:
+        probes = [_probe_sub_agent(entry) for entry in live]
+        results = await asyncio.gather(*probes, return_exceptions=True)
+        for r in results:
+            if isinstance(r, tuple):
+                sub_agent_results[r[0]] = r[1]
+
     return {
         "status": "ok",
         "agent_id": AGENT_ID,
@@ -96,5 +128,6 @@ async def health():
         "data": {
             "version": AGENT_VERSION,
             "uptime_seconds": round(time.time() - START_TIME, 1),
+            "sub_agents": sub_agent_results,
         },
     }
