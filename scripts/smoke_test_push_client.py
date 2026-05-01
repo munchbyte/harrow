@@ -103,6 +103,10 @@ async def _step_dispatch() -> tuple[bool, str]:
     return True, job_id
 
 
+_TERMINAL_OK = {"success", "succeeded", "complete", "completed", "done", "finished"}
+_TERMINAL_FAIL = {"failed", "failure", "error", "errored", "stopped", "cancelled", "canceled"}
+
+
 async def _step_poll_status(push_job_id: str) -> bool:
     print(f"[4/5] GET /status/{push_job_id} (poll up to {POLL_TIMEOUT_SECONDS}s) ...")
     deadline = time.time() + POLL_TIMEOUT_SECONDS
@@ -114,18 +118,19 @@ async def _step_poll_status(push_job_id: str) -> bool:
             print(f"      FAIL: poll error: {e}")
             return False
         data = result.get("data", result) if isinstance(result, dict) else {}
-        job_status = data.get("status") if isinstance(data, dict) else None
+        raw_status = data.get("status") if isinstance(data, dict) else None
+        job_status = str(raw_status).lower() if raw_status else None
         if job_status != last_status:
             print(f"      ... status={job_status}")
             last_status = job_status
-        if job_status in ("success", "complete", "done"):
+        if job_status in _TERMINAL_OK:
             print(f"      PASS (final status={job_status})")
             return True
-        if job_status in ("failed", "error", "stopped"):
+        if job_status in _TERMINAL_FAIL:
             print(f"      FAIL: job ended with status={job_status}. Body: {result}")
             return False
         await asyncio.sleep(POLL_INTERVAL_SECONDS)
-    print(f"      FAIL: status did not reach success within {POLL_TIMEOUT_SECONDS}s (last={last_status})")
+    print(f"      FAIL: status did not reach a terminal state within {POLL_TIMEOUT_SECONDS}s (last={last_status})")
     return False
 
 
