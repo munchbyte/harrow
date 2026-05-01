@@ -37,6 +37,10 @@ DEFAULT_TIMEOUT = 10.0
 HEALTH_TIMEOUT = 2.0   # /health is called from HARROW's own /health — must be fast
 TARGET = "push_cms"
 
+# Push v1.2.0 enforces this enum on POST /run.caller. Using anything outside
+# the set returns HTTP 422. For free-form traceability use caller_label instead.
+PUSH_CALLER_VALUES = ("human", "harrow", "avery", "monitor")
+
 
 class PushClientError(RuntimeError):
     """Raised when Push CMS returns a non-2xx response or is unreachable."""
@@ -185,23 +189,38 @@ async def dispatch(
     params: Optional[dict] = None,
     *,
     caller: str = "harrow",
+    caller_label: Optional[str] = None,
     timeout: float = DEFAULT_TIMEOUT,
     job_id: Optional[str] = None,
 ) -> dict:
     """
     POST /run — dispatch a task to Push CMS.
 
-    Returns the Push response (typically {job_id, ...}). Raises PushClientError
-    on non-2xx. The caller field is recorded in Push's logs for traceability.
+    `caller` must be one of PUSH_CALLER_VALUES (Push v1.2.0 enforces this enum).
+    Use `caller_label` for any free-form trace tag (e.g. 'harrow_smoke',
+    'campaign_42'); it lands in Push's logs alongside caller.
+
+    Returns Push's response (typically {job_id, ...}). Raises PushClientError
+    on non-2xx or invalid caller.
     """
+    if caller not in PUSH_CALLER_VALUES:
+        raise PushClientError(
+            f"Invalid caller '{caller}'. Push only accepts {PUSH_CALLER_VALUES}. "
+            f"To resolve this: pass caller='harrow' and put the trace tag in caller_label"
+        )
+
     payload: dict[str, Any] = {
         "task": task,
         "params": params or {},
         "caller": caller,
     }
+    if caller_label:
+        payload["caller_label"] = caller_label
+
+    label_str = f", label={caller_label}" if caller_label else ""
     alog(
         "INFO",
-        f"Dispatching task '{task}' to Push CMS (caller={caller})",
+        f"Dispatching task '{task}' to Push CMS (caller={caller}{label_str})",
         job_id=job_id, channel=TARGET, step="push_dispatch",
         action=f"dispatch_{task}", outcome="sending",
     )

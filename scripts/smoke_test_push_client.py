@@ -30,7 +30,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from integrations import push_client
 
 
-CALLER = "harrow_smoke"
+CALLER = "harrow"            # Push enforces enum {human, harrow, avery, monitor}
+CALLER_LABEL = "harrow_smoke"  # free-form trace tag — appears in Push's logs
 POLL_TIMEOUT_SECONDS = 30
 POLL_INTERVAL_SECONDS = 2
 
@@ -45,6 +46,9 @@ def _check_env() -> tuple[bool, str]:
     return True, f"target={url}"
 
 
+_HEALTHY = {"ok", "online", "healthy", "ready", "running"}
+
+
 async def _step_health() -> bool:
     print("[1/5] GET /health ...")
     try:
@@ -52,11 +56,11 @@ async def _step_health() -> bool:
     except Exception as e:
         print(f"      FAIL: {e}")
         return False
-    status_value = result.get("status") or result.get("data", {}).get("status")
-    if status_value != "ok":
-        print(f"      FAIL: status field is '{status_value}', expected 'ok'. Body: {result}")
+    status_value = str(result.get("status") or result.get("data", {}).get("status") or "").lower()
+    if status_value not in _HEALTHY:
+        print(f"      FAIL: status field is '{status_value}', expected one of {_HEALTHY}. Body: {result}")
         return False
-    print("      PASS")
+    print(f"      PASS (status={status_value})")
     return True
 
 
@@ -76,11 +80,19 @@ async def _step_info() -> bool:
 
 
 async def _step_dispatch() -> tuple[bool, str]:
-    print(f"[3/5] POST /run task=run_db_backup caller={CALLER} ...")
+    print(f"[3/5] POST /run task=run_db_backup caller={CALLER} caller_label={CALLER_LABEL} ...")
     try:
-        result = await push_client.dispatch("run_db_backup", {}, caller=CALLER)
-    except Exception as e:
+        result = await push_client.dispatch(
+            "run_db_backup", {}, caller=CALLER, caller_label=CALLER_LABEL,
+        )
+    except push_client.PushClientError as e:
+        # Print the body so we can see exactly what Push rejected.
         print(f"      FAIL: {e}")
+        if e.body:
+            print(f"      response body: {e.body}")
+        return False, ""
+    except Exception as e:
+        print(f"      FAIL: {type(e).__name__}: {e}")
         return False, ""
     data = result.get("data", result) if isinstance(result, dict) else {}
     job_id = data.get("job_id") if isinstance(data, dict) else None

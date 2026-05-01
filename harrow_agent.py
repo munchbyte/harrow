@@ -88,18 +88,30 @@ app.include_router(dashboard_router)
 app.include_router(settings_router)
 
 
+_HEALTHY_STATUS_VALUES = {"ok", "online", "healthy", "ready", "running"}
+
+
 async def _probe_sub_agent(entry: dict) -> tuple[str, str]:
-    """Probe one sub-agent's /health. Returns (agent_id, 'ok'|'unreachable')."""
+    """Probe one sub-agent's /health. Returns (agent_id, 'ok'|'unreachable').
+
+    Different sub-agents use different healthy-status conventions
+    (HARROW says 'ok', Push v1.2.0 says 'online'). Any value in
+    _HEALTHY_STATUS_VALUES counts as healthy.
+    """
     agent_id = entry["agent_id"]
     health_fn = entry.get("health_fn")
     if health_fn is None:
         return agent_id, "unknown"
     try:
         result = await health_fn()
-        ok = isinstance(result, dict) and (
-            result.get("status") == "ok" or result.get("data", {}).get("status") == "ok"
+        if not isinstance(result, dict):
+            return agent_id, "unreachable"
+        status_value = (
+            result.get("status")
+            or result.get("data", {}).get("status")
+            or ""
         )
-        return agent_id, "ok" if ok else "unreachable"
+        return agent_id, "ok" if str(status_value).lower() in _HEALTHY_STATUS_VALUES else "unreachable"
     except Exception:
         # ASP-001: a sub-agent being down must NOT make HARROW unhealthy.
         return agent_id, "unreachable"
