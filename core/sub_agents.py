@@ -20,7 +20,7 @@ Each entry:
 
 from typing import Awaitable, Callable, Optional
 
-from integrations import push_client
+from integrations import push_client, interact_client
 
 
 SubAgentHealthFn = Callable[[], Awaitable[dict]]
@@ -46,6 +46,20 @@ SUB_AGENTS: dict[str, dict] = {
             "run_archive",
         ],
         "health_fn": push_client.health,
+    },
+    "interact_crm": {
+        "agent_id": "interact_crm",
+        "name": "Interact CRM",
+        "tier": 3,
+        "parent": "harrow",
+        "url_env": "INTERACT_AGENT_URL",
+        "key_env": "INTERACT_API_KEY",
+        "public_url": None,        # internal-only until otherwise confirmed
+        "status": "wiring",        # promote to 'live' after smoke discovery passes
+        "live_since": None,        # set once smoke proves the wiring
+        "primary_task": None,      # to be discovered via /info
+        "tasks": [],               # populated after first successful /info call
+        "health_fn": interact_client.health,
     },
 }
 

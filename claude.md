@@ -37,7 +37,20 @@ state/       harrow.db
 - All HARROW-dispatchable tasks: publish_content_brief, run_draft, run_carousel_brief, run_metrics_sync, run_archive
 - Push runs its own cron for: scheduler, metrics sync, weekly improvement brief, token check, db backup, scout cycle
 - HARROW's /health probes Push /health non-blocking — Push being down does NOT make HARROW unhealthy (ASP-001).
-- Smoke test: python -m scripts.smoke_test_push_client
+- Smoke test: python3 -m scripts.smoke_test_push_client
+
+### Interact CRM — Tier 3 (WIRING — discovery pending)
+- URL (internal, used for HARROW->Interact): http://localhost:8003
+- Auth: X-API-Key header (assumed; confirm via discovery), value in env INTERACT_API_KEY
+- Client module: integrations/interact_client.py
+- Registry entry: core/sub_agents.py SUB_AGENTS["interact_crm"]
+  (status='wiring', tasks=[] until /info discovery completes)
+- Primary task HARROW dispatches: TBD — discover from /info on the VPS
+- HARROW's /health probes Interact /health non-blocking — Interact being down does NOT make HARROW unhealthy (ASP-001).
+- Discovery + smoke test: python3 -m scripts.smoke_test_interact_client
+  Re-run with --dispatch=<task_name> once a safe idempotent task is identified
+  from the /info capabilities. Then promote registry entry status to 'live'
+  and populate tasks[] + primary_task fields.
 
 ## Environment Variables
 HARROW_API_KEY, ANTHROPIC_API_KEY, OUTSCRAPER_API_KEY
