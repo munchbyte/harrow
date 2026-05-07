@@ -54,11 +54,15 @@ SUB_AGENTS: dict[str, dict] = {
         "parent": "harrow",
         "url_env": "INTERACT_AGENT_URL",
         "key_env": "INTERACT_API_KEY",
-        "public_url": None,        # internal-only until otherwise confirmed
-        "status": "wiring",        # promote to 'live' after smoke discovery passes
-        "live_since": None,        # set once smoke proves the wiring
-        "primary_task": None,      # to be discovered via /info
-        "tasks": [],               # populated after first successful /info call
+        "public_url": None,        # Tailscale-only, no public URL by design
+        "status": "live",
+        "live_since": "2026-05-06",
+        "primary_task": "log_interaction",
+        "tasks": [
+            "reply_received",   # [HARROW-CRM] signal: inbound reply from a lead
+            "advance_stage",    # [HARROW-CRM] signal: lead progressed in pipeline
+            "log_interaction",  # [HARROW-CRM] signal: outbound touchpoint sent
+        ],
         "health_fn": interact_client.health,
     },
 }

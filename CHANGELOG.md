@@ -1,5 +1,15 @@
 # HARROW Changelog
 
+## 2026-05-07 — BUG-006 closed: HARROW → Interact CRM signal handler
+- integrations/interact_client.py: switched `health()` and `info()` to `auth=True` (Interact v2.0-dev requires X-API-Key on every endpoint, including /health — deviation from ASP-002 §4.1 accepted per ASP-001).
+- integrations/interact_client.py: dropped the assumed caller enum (`INTERACT_CALLER_VALUES`); Interact's RunRequest schema accepts any caller string. Convention `caller='harrow'` retained as default.
+- integrations/interact_client.py: added three named [HARROW-CRM] signal wrappers — `send_reply_received(lead_id, contact_email, reply_text, stage)`, `send_advance_stage(lead_id, new_stage, trigger, channel)`, `send_log_interaction(lead_id, interaction_type, template, sent_at)`.
+- core/sub_agents.py: promoted `interact_crm` from `status='wiring'` → `status='live'` (live_since 2026-05-06); populated `tasks=[reply_received, advance_stage, log_interaction]`; `primary_task='log_interaction'`. Interact now appears in HARROW's `/health` sub_agents block.
+- .env.example: changed `INTERACT_AGENT_URL=http://localhost:8003` → `http://100.109.24.65:8003` with comment explaining Interact binds to the Tailscale interface only (uvicorn listens on `100.109.24.65:8003`, not loopback).
+- Unreachable error messages updated to point at the Tailscale URL gotcha.
+- No Interact CRM code touched (ASP-001 sovereignty preserved).
+- Smoke-test guidance: run `python3 -m scripts.smoke_test_interact_client --dispatch=pipeline_health` from the VPS after `set -a; source .env; set +a`. Avoid `reply_received` and `advance_stage` for smoke — those write real records and can fire HITL gates.
+
 ## v1.0.0 — 2026-03-22
 ### Phase 5: Dashboard + Settings + Channel Report
 - Control Centre dashboard (templates/index.html) — login, GO states, HITL gates, task runner, SSE terminal, activity log

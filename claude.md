@@ -39,18 +39,26 @@ state/       harrow.db
 - HARROW's /health probes Push /health non-blocking — Push being down does NOT make HARROW unhealthy (ASP-001).
 - Smoke test: python3 -m scripts.smoke_test_push_client
 
-### Interact CRM — Tier 3 (WIRING — discovery pending)
-- URL (internal, used for HARROW->Interact): http://localhost:8003
-- Auth: X-API-Key header (assumed; confirm via discovery), value in env INTERACT_API_KEY
+### Interact CRM — Tier 3 (LIVE since 2026-05-06)
+- URL (used for HARROW->Interact): http://100.109.24.65:8003
+  Same VPS as HARROW, but Interact binds to its tailscale0 interface only —
+  NOT 0.0.0.0, NOT 127.0.0.1. Localhost will not work even from the same machine.
+- Auth: X-API-Key header REQUIRED on every endpoint including /health
+  (deviation from ASP-002 §4.1, accepted per ASP-001). Value in env INTERACT_API_KEY.
 - Client module: integrations/interact_client.py
 - Registry entry: core/sub_agents.py SUB_AGENTS["interact_crm"]
-  (status='wiring', tasks=[] until /info discovery completes)
-- Primary task HARROW dispatches: TBD — discover from /info on the VPS
+- Primary task HARROW dispatches: log_interaction
+- All HARROW-dispatchable [HARROW-CRM] signal tasks: reply_received, advance_stage, log_interaction
+- Named wrappers (use these from calling code, not raw dispatch()):
+    send_reply_received(lead_id, contact_email, reply_text, stage)
+    send_advance_stage(lead_id, new_stage, trigger, channel)
+    send_log_interaction(lead_id, interaction_type, template, sent_at)
 - HARROW's /health probes Interact /health non-blocking — Interact being down does NOT make HARROW unhealthy (ASP-001).
 - Discovery + smoke test: python3 -m scripts.smoke_test_interact_client
-  Re-run with --dispatch=<task_name> once a safe idempotent task is identified
-  from the /info capabilities. Then promote registry entry status to 'live'
-  and populate tasks[] + primary_task fields.
+  For end-to-end proof of dispatch, re-run with `--dispatch=pipeline_health` (read-only
+  if exposed) or `--dispatch=retry_audit_pushes` (no-op while Avery is offline).
+  Do NOT smoke-test with reply_received or advance_stage — those write real records
+  and can fire HITL gates.
 
 ## Environment Variables
 HARROW_API_KEY, ANTHROPIC_API_KEY, OUTSCRAPER_API_KEY
