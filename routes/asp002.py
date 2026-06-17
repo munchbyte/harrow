@@ -16,7 +16,7 @@ All responses: {status, agent_id, timestamp, data/error}
 import time
 import asyncio
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -184,20 +184,37 @@ class AuthRequest(BaseModel):
 
 
 @router.post("/auth")
-async def auth(body: AuthRequest):
-    """Validate API key. Set session cookie. No auth required."""
+async def auth(body: AuthRequest, request: Request):
+    """Validate API key. Set session cookie. No auth required.
+
+    Cookie `secure` and `samesite` adapt to the request scheme so the dashboard
+    works both via the public HTTPS URL (Nginx-terminated) and via Tailscale
+    direct-to-uvicorn HTTP. Browsers drop a Secure cookie on a plain-HTTP
+    response, which used to make the dashboard bounce straight back to login
+    when accessed via Tailscale on :8001.
+    """
     valid = await validate_and_set_cookie(body.token)
     if not valid:
         return _error_envelope("Invalid API key", status_code=401)
+
+    # Detect TLS — direct from FastAPI's URL, or via Nginx's X-Forwarded-Proto.
+    is_https = (
+        request.url.scheme == "https"
+        or request.headers.get("x-forwarded-proto", "").lower() == "https"
+    )
 
     response = JSONResponse(content=_envelope({"authenticated": True}))
     response.set_cookie(
         key="harrow_token",
         value=body.token,
         httponly=True,
-        secure=True,
-        samesite="strict",
+        secure=is_https,
+        samesite="strict" if is_https else "lax",
         max_age=86400 * 7,  # 7 days
     )
-    alog("INFO", "Dashboard authenticated", caller="adrian", step="auth")
+    alog(
+        "INFO",
+        f"Dashboard authenticated (scheme={'https' if is_https else 'http'})",
+        caller="adrian", step="auth",
+    )
     return response
